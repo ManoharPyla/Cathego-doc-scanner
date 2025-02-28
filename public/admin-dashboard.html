@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Document Comparison Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f6f7;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        
+        <h2>User Management</h2>
+        <table id="user-table">
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Email</th>
+                    <th>Credits</th>
+                </tr>
+            </thead>
+            <tbody id="user-list">
+                <!-- User data will be populated here -->
+            </tbody>
+        </table>
+
+        <h2>Document Overview</h2>
+        <table id="document-table">
+            <thead>
+                <tr>
+                    <th>Document ID</th>
+                    <th>User ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Date Uploaded</th>
+                </tr>
+            </thead>
+            <tbody id="document-list">
+                <!-- Document data will be populated here -->
+            </tbody>
+        </table>
+
+        <h2>Comparison Logs</h2>
+        <table id="comparison-table">
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>User ID</th>
+                    <th>Text Length</th>
+                    <th>Threshold</th>
+                    <th>Results</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="comparison-list">
+                <!-- Comparison log data will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function loadUserData() {
+            const response = await fetch('/api/admin/users');
+            const users = await response.json();
+            const userList = document.getElementById('user-list');
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.email}</td>
+                    <td>${user.credits}</td>
+                `;
+                userList.appendChild(row);
+            });
+        }
+
+        async function loadDocumentData() {
+            const response = await fetch('/api/admin/documents');
+            const documents = await response.json();
+            const documentList = document.getElementById('document-list');
+            documents.forEach(doc => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${doc.id}</td>
+                    <td>${doc.userId}</td>
+                    <td>${doc.name}</td>
+                    <td>${doc.type}</td>
+                    <td>${new Date(doc.date).toLocaleString()}</td>
+                `;
+                documentList.appendChild(row);
+            });
+        }
+
+        async function loadComparisonLogs() {
+            const response = await fetch('/api/admin/comparisons');
+            const comparisons = await response.json();
+            const comparisonList = document.getElementById('comparison-list');
+            comparisons.forEach(comp => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${comp.requestId}</td>
+                    <td>${comp.userId}</td>
+                    <td>${comp.textLength}</td>
+                    <td>${comp.threshold}</td>
+                    <td>${comp.results.length} results</td>
+                    <td>${new Date(comp.date).toLocaleString()}</td>
+                `;
+                comparisonList.appendChild(row);
+            });
+        }
+
+        // Load data on page load
+        loadUserData();
+        loadDocumentData();
+        loadComparisonLogs();
+    </script>
+</body>
+</html>
